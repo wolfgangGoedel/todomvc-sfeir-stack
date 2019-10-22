@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { TodoList } from './TodoList';
 import { TodoInput } from './TodoInput';
-import { action } from '../store';
+import { AppReady } from '../store/actions';
 
 export const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(action.appReady());
+    dispatch(AppReady());
   }, [dispatch]);
 
   return (

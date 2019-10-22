@@ -1,10 +1,25 @@
-import React from 'react';
+import React, { FC } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { getTodo, DoneSwitched } from '../store';
 
-export const TodoItem = ({ children }) => {
+type TodoItemProps = {
+  id: string;
+};
+
+export const TodoItem: FC<TodoItemProps> = ({ id }) => {
+  const todo = useSelector(getTodo(id));
+  const dispatch = useDispatch();
+
   return (
     <li>
       <div className="view">
-        <label>{children}</label>
+        <input
+          className="toggle"
+          type="checkbox"
+          checked={todo.done}
+          onChange={() => dispatch(DoneSwitched(id))}
+        />
+        <label>{todo.description}</label>
       </div>
     </li>
   );

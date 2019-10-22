@@ -1,13 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import 'todomvc-app-css/index.css';
 import { Provider } from 'react-redux';
+import 'todomvc-app-css/index.css';
 
 import { make as makeStore } from './store';
+import { make as makeApi } from './store/api';
 import { App } from './components/App';
-import * as api from './api';
 
-const store = makeStore(api);
+const API_ROOT = '//localhost:3001/api/tasks';
+const store = makeStore(makeApi(API_ROOT));
 
 ReactDOM.render(
   <Provider store={store}>

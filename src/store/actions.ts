@@ -1,39 +1,30 @@
-import { Todo } from './state';
+import { Todo } from './model';
 
-export type AppReady = {
-  type: 'APP_READY';
-};
+export const AppReady = () =>
+  <const>{
+    type: 'APP_READY'
+  };
 
-export type TodosReceived = {
-  type: 'TODOS_RECEIVED';
-  todos: Todo[];
-};
+export const TodosReceived = (todos: Todo[]) =>
+  <const>{
+    type: 'TODOS_RECEIVED',
+    todos
+  };
 
-export type TodoAdded = {
-  type: 'TODO_ADDED';
-  description: string;
-};
+export const TodoAdded = (description: string) =>
+  <const>{
+    type: 'TODO_ADDED',
+    description
+  };
 
-export type TodoReceived = {
-  type: 'TODO_RECEIVED';
-  todo: Todo;
-};
+export const TodoReceived = (todo: Todo) =>
+  <const>{
+    type: 'TODO_RECEIVED',
+    todo
+  };
 
-export type Action = AppReady | TodosReceived | TodoAdded | TodoReceived;
-
-export const appReady = (): AppReady => ({ type: 'APP_READY' });
-
-export const todosReceived = (todos: Todo[]): TodosReceived => ({
-  type: 'TODOS_RECEIVED',
-  todos
-});
-
-export const todoAdded = (description: string): TodoAdded => ({
-  type: 'TODO_ADDED',
-  description
-});
-
-export const todoReceived = (todo: Todo): TodoReceived => ({
-  type: 'TODO_RECEIVED',
-  todo
-});
+export const DoneSwitched = (todoId: string) =>
+  <const>{
+    type: 'DONE_SWITCHED',
+    todoId
+  };

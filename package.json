@@ -7,6 +7,7 @@
     "@types/node": "12.11.2",
     "@types/react": "16.9.9",
     "@types/react-dom": "16.9.2",
+    "@types/react-redux": "^7.1.5",
     "prettier": "^1.18.2",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
@@ -17,7 +18,8 @@
     "redux-observable": "^1.2.0",
     "rxjs": "^6.5.3",
     "todomvc-app-css": "^2.3.0",
-    "typescript": "3.6.4"
+    "typescript": "3.6.4",
+    "utility-types": "^3.8.0"
   },
   "scripts": {
     "start": "react-scripts start",

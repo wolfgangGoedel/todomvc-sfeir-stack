@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { todoAdded } from '../store/actions';
+import { TodoAdded } from '../store/actions';
 
 export const TodoInput = () => {
   const [value, setValue] = useState('');
@@ -11,7 +11,7 @@ export const TodoInput = () => {
     <form
       onSubmit={e => {
         e.preventDefault();
-        dispatch(todoAdded(value));
+        dispatch(TodoAdded(value));
         setValue('');
       }}
     >
