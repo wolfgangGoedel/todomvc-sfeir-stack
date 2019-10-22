@@ -44,6 +44,13 @@ export const reducer: Reducer<State, Action> = (
         }
       };
 
+    case 'TODO_DELETED':
+      const { [action.todoId]: _, ...todosMap } = state.todosMap;
+      return {
+        todosMap,
+        todosOrd: state.todosOrd.filter(id => id !== action.todoId)
+      };
+
     default:
       return state;
   }

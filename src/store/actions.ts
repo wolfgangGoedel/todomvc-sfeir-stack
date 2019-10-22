@@ -28,3 +28,15 @@ export const DoneSwitched = (todoId: string) =>
     type: 'DONE_SWITCHED',
     todoId
   };
+
+export const TodoRemoved = (todoId: string) =>
+  <const>{
+    type: 'TODO_REMOVED',
+    todoId
+  };
+
+export const TodoDeleted = (todoId: string) =>
+  <const>{
+    type: 'TODO_DELETED',
+    todoId
+  };

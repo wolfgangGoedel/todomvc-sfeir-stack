@@ -1,6 +1,6 @@
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, mergeMap } from 'rxjs/operators';
 import { combineEpics, Epic as EpicType } from 'redux-observable';
-import { TodosReceived, TodoReceived } from './actions';
+import { TodosReceived, TodoReceived, TodoDeleted } from './actions';
 import { ActionMap, Action, State, Api } from './model';
 import { merge } from 'rxjs';
 import { getTodo } from './selectors';
@@ -29,4 +29,13 @@ const patchTodo: Epic = (action$, state$, api) =>
     })
   );
 
-export const rootEpic = combineEpics(appReady, addTodo, patchTodo);
+const deleteTodo: Epic = (action$, _state$, api) =>
+  action$
+    .ofType<ActionMap['TodoRemoved']>('TODO_REMOVED')
+    .pipe(
+      mergeMap(({ todoId }) =>
+        api.delete(todoId).pipe(map(_ => TodoDeleted(todoId)))
+      )
+    );
+
+export const rootEpic = combineEpics(appReady, addTodo, patchTodo, deleteTodo);
