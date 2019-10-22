@@ -1,14 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { TodoList } from "./TodoList";
+import { useTodos } from "../hooks/useTodos";
 
 export const App = () => {
-  const [todos, setTodos] = useState([]);
-
-  useEffect(() => {
-    fetch("//localhost:3001/api/tasks")
-      .then(r => r.json())
-      .then(setTodos);
-  }, []);
+  const todos = useTodos();
 
   return (
     <section className="todoapp">
