@@ -1,12 +1,10 @@
 import 'symbol-observable';
 import { TestScheduler } from 'rxjs/testing';
-import * as action from '../store/actions';
-import { State } from '../store/state';
+import { State, Action } from '../store/model';
 
-import { make as makeStore, Api } from '../store';
+import { make as makeStore, AppReady, TodoAdded } from '../store';
 import { from } from 'rxjs';
 import { distinctUntilChanged, skip } from 'rxjs/operators';
-import { RunHelpers } from 'rxjs/internal/testing/TestScheduler';
 
 describe('store', () => {
   let scheduler: TestScheduler;
@@ -19,9 +17,9 @@ describe('store', () => {
 
   test('load', () => {
     scheduler.run(({ hot, cold, expectObservable }) => {
-      const actions = hot('a', { a: action.appReady() });
+      const actions = hot('a', { a: AppReady() });
       const api = {
-        loadAll: () =>
+        getAll: () =>
           cold('--(r|)', { r: [{ id: '1', description: 'one', done: false }] })
       };
 
@@ -34,13 +32,16 @@ describe('store', () => {
       );
 
       expectObservable(state$).toBe('--s', {
-        s: { todos: { '1': { id: '1', description: 'one', done: false } } }
+        s: {
+          todosMap: { '1': { description: 'one', done: false } },
+          todosOrd: ['1']
+        }
       });
     });
   });
 
   const testState = (config: {
-    actions: [string, { [marble: string]: action.Action }];
+    actions: [string, { [marble: string]: Action }];
     state: [string, { [marble: string]: State }];
     api: { [func: string]: [string, { [marble: string]: any }] };
   }) =>
@@ -67,26 +68,33 @@ describe('store', () => {
     testState({
       actions: [
         '-i---a',
-        { i: action.appReady(), a: action.todoAdded('dummy') }
+        {
+          i: AppReady(),
+          a: TodoAdded('dummy')
+        }
       ],
       state: [
         '--i----e',
         {
-          i: { todos: { '1': { id: '1', description: 'one', done: false } } },
+          i: {
+            todosMap: { '1': { description: 'one', done: false } },
+            todosOrd: ['1']
+          },
           e: {
-            todos: {
-              '1': { id: '1', description: 'one', done: false },
-              '2': { id: '2', description: 'two', done: false }
-            }
+            todosMap: {
+              '1': { description: 'one', done: false },
+              '2': { description: 'two', done: false }
+            },
+            todosOrd: ['1', '2']
           }
         }
       ],
       api: {
-        loadAll: [
+        getAll: [
           '-(r|)',
           { r: [{ id: '1', description: 'one', done: false }] }
         ],
-        addNew: ['--(r|)', { r: { id: '2', description: 'two', done: false } }]
+        post: ['--(r|)', { r: { id: '2', description: 'two', done: false } }]
       }
     }));
 });
