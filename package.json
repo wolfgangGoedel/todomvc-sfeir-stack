@@ -10,7 +10,12 @@
     "prettier": "^1.18.2",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
+    "react-redux": "^7.1.1",
     "react-scripts": "3.2.0",
+    "redux": "^4.0.4",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-observable": "^1.2.0",
+    "rxjs": "^6.5.3",
     "todomvc-app-css": "^2.3.0",
     "typescript": "3.6.4"
   },

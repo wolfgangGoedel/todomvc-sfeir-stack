@@ -1,16 +1,20 @@
-import React from "react";
-import { TodoList } from "./TodoList";
-import { useTodos } from "../hooks/useTodos";
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { TodoList } from './TodoList';
+import { action } from '../store';
 
 export const App = () => {
-  const todos = useTodos();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(action.appReady());
+  }, [dispatch]);
 
   return (
     <section className="todoapp">
       <header className="header">
         <h1>todos</h1>
       </header>
-      <TodoList todos={todos} />
+      <TodoList />
     </section>
   );
 };
