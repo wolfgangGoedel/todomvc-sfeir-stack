@@ -1,20 +1,20 @@
 import { map, switchMap } from 'rxjs/operators';
-import { ajax } from 'rxjs/ajax';
-import { Epic, combineEpics } from 'redux-observable';
-import { State } from './state';
-import { Action, AppReady, todosReceived } from './actions';
+import { combineEpics } from 'redux-observable';
+import { Epic } from '.';
+import { AppReady, todosReceived, TodoAdded, todoReceived } from './actions';
 
-type AppEpic = Epic<Action, Action, State>;
-
-const appReady: AppEpic = action$ =>
+const appReady: Epic = (action$, _state$, api) =>
   action$
     .ofType<AppReady>('APP_READY')
+    .pipe(switchMap(_ => api.loadAll().pipe(map(todosReceived))));
+
+const addTodo: Epic = (action$, _state$, api) =>
+  action$
+    .ofType<TodoAdded>('TODO_ADDED')
     .pipe(
-      switchMap(_ =>
-        ajax
-          .get('//localhost:3001/api/tasks')
-          .pipe(map(res => todosReceived(res.response)))
+      switchMap(({ description }) =>
+        api.addNew(description).pipe(map(todoReceived))
       )
     );
 
-export const rootEpic = combineEpics(appReady);
+export const rootEpic = combineEpics(appReady, addTodo);

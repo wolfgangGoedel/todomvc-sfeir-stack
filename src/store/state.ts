@@ -4,6 +4,7 @@ import { Action } from './actions';
 export type Todo = {
   id: string;
   description: string;
+  done: boolean;
 };
 
 export type State = {
@@ -22,6 +23,13 @@ export const reducer: Reducer<State, Action> = (
     case 'TODOS_RECEIVED':
       return {
         todos: Object.fromEntries(action.todos.map(todo => [todo.id, todo]))
+      };
+    case 'TODO_RECEIVED':
+      return {
+        todos: {
+          ...state.todos,
+          [action.todo.id]: action.todo
+        }
       };
     default:
       return state;
