@@ -3,7 +3,13 @@ import { TestScheduler } from 'rxjs/testing';
 import { State, Action, TodoData, Todo } from '../store/model';
 import { testState } from '../utils/storeTests';
 
-import { make as makeStore, AppReady, TodoAdded, TodoRemoved } from '../store';
+import {
+  make as makeStore,
+  AppReady,
+  TodoAdded,
+  TodoRemoved,
+  DoneSwitched
+} from '../store';
 import { from } from 'rxjs';
 import { distinctUntilChanged, skip } from 'rxjs/operators';
 
@@ -94,6 +100,36 @@ describe('store', () => {
               '1': todo1
             },
             todosOrd: ['1']
+          }
+        }
+      ]
+    });
+  });
+
+  test('toggle', () => {
+    testState<Action, State>({
+      makeStore,
+      api: {
+        getAll: ['-(r|)', { r: apiAll }],
+        patch: ['--(r|)', { r: { id: '1', ...todo1, done: true } }]
+      },
+      actions: [
+        '-i---d',
+        {
+          i: AppReady(),
+          d: DoneSwitched('1')
+        }
+      ],
+      state: [
+        '--i--e-e',
+        {
+          i: expect.anything(),
+          e: {
+            todosMap: {
+              '1': { ...todo1, done: true },
+              '2': todo2
+            },
+            todosOrd: ['2', '1']
           }
         }
       ]
