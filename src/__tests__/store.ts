@@ -1,26 +1,26 @@
 import 'symbol-observable';
 import { TestScheduler } from 'rxjs/testing';
-import { State, Action } from '../store/model';
+import { State, Action, TodoData, Todo } from '../store/model';
+import { testState } from '../utils/storeTests';
 
-import { make as makeStore, AppReady, TodoAdded } from '../store';
+import { make as makeStore, AppReady, TodoAdded, TodoRemoved } from '../store';
 import { from } from 'rxjs';
 import { distinctUntilChanged, skip } from 'rxjs/operators';
 
-describe('store', () => {
-  let scheduler: TestScheduler;
+const todo1: TodoData = { description: 'one', done: false };
+const todo2: TodoData = { description: 'two', done: false };
+const apiAll: Todo[] = [{ id: '2', ...todo2 }, { id: '1', ...todo1 }];
 
-  beforeEach(() => {
-    scheduler = new TestScheduler((actual, expected) => {
+describe('store', () => {
+  test('load', () => {
+    const scheduler = new TestScheduler((actual, expected) => {
       expect(actual).toEqual(expected);
     });
-  });
 
-  test('load', () => {
     scheduler.run(({ hot, cold, expectObservable }) => {
       const actions = hot('a', { a: AppReady() });
       const api = {
-        getAll: () =>
-          cold('--(r|)', { r: [{ id: '1', description: 'one', done: false }] })
+        getAll: () => cold('--(r|)', { r: apiAll })
       };
 
       const store = makeStore(api as any);
@@ -33,39 +33,20 @@ describe('store', () => {
 
       expectObservable(state$).toBe('--s', {
         s: {
-          todosMap: { '1': { description: 'one', done: false } },
-          todosOrd: ['1']
+          todosMap: { '1': todo1, '2': todo2 },
+          todosOrd: ['2', '1']
         }
       });
     });
   });
 
-  const testState = (config: {
-    actions: [string, { [marble: string]: Action }];
-    state: [string, { [marble: string]: State }];
-    api: { [func: string]: [string, { [marble: string]: any }] };
-  }) =>
-    scheduler.run(h => {
-      const [actionMarbles, actionValues] = config.actions;
-      const action$ = h.hot(actionMarbles, actionValues);
-      const api = Object.fromEntries(
-        Object.entries(config.api).map(([func, [marbles, mconf]]) => [
-          func,
-          () => h.cold(marbles, mconf)
-        ])
-      );
-      const store = makeStore(api as any);
-      action$.subscribe(store.dispatch);
-      const state$ = from(store as any).pipe(
-        distinctUntilChanged(),
-        skip(1)
-      );
-      const [stateMarbles, stateValues] = config.state;
-      h.expectObservable(state$).toBe(stateMarbles, stateValues);
-    });
-
-  test('add', () =>
-    testState({
+  test('add', () => {
+    testState<Action, State>({
+      makeStore,
+      api: {
+        getAll: ['-(r|)', { r: apiAll }],
+        post: ['--(r|)', { r: { id: '3', description: 'three', done: false } }]
+      },
       actions: [
         '-i---a',
         {
@@ -76,25 +57,46 @@ describe('store', () => {
       state: [
         '--i----e',
         {
-          i: {
-            todosMap: { '1': { description: 'one', done: false } },
-            todosOrd: ['1']
-          },
+          i: expect.anything(),
           e: {
             todosMap: {
-              '1': { description: 'one', done: false },
-              '2': { description: 'two', done: false }
+              '1': todo1,
+              '2': todo2,
+              '3': { description: 'three', done: false }
             },
-            todosOrd: ['1', '2']
+            todosOrd: ['2', '1', '3']
           }
         }
-      ],
+      ]
+    });
+  });
+
+  test('remove', () => {
+    testState<Action, State>({
+      makeStore,
       api: {
-        getAll: [
-          '-(r|)',
-          { r: [{ id: '1', description: 'one', done: false }] }
-        ],
-        post: ['--(r|)', { r: { id: '2', description: 'two', done: false } }]
-      }
-    }));
+        getAll: ['-(r|)', { r: apiAll }],
+        delete: ['--(r|)', { r: true }]
+      },
+      actions: [
+        '-i---d',
+        {
+          i: AppReady(),
+          d: TodoRemoved('2')
+        }
+      ],
+      state: [
+        '--i----e',
+        {
+          i: expect.anything(),
+          e: {
+            todosMap: {
+              '1': todo1
+            },
+            todosOrd: ['1']
+          }
+        }
+      ]
+    });
+  });
 });
