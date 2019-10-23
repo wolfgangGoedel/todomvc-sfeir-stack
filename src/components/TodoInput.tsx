@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, FC } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { TodoAdded } from '../store/actions';
 
-export const TodoInput = () => {
+export const TodoInput: FC = () => {
   const [value, setValue] = useState('');
   const dispatch = useDispatch();
 

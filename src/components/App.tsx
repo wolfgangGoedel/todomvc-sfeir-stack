@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, FC } from 'react';
 import { useDispatch } from 'react-redux';
 import { TodoList } from './TodoList';
 import { TodoInput } from './TodoInput';
 import { AppReady } from '../store/actions';
 
-export const App = () => {
+export const App: FC = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(AppReady());
